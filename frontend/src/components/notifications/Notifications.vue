@@ -84,7 +84,7 @@
 
 <script lang="ts" setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue'
-import {useRouter, isNavigationFailure, NavigationFailureType, RouteLocationRaw} from 'vue-router'
+import {useRouter, isNavigationFailure, NavigationFailureType, type RouteLocationRaw} from 'vue-router'
 
 import NotificationService from '@/services/notification'
 import BaseButton from '@/components/base/BaseButton.vue'
