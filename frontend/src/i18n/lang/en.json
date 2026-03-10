@@ -32,6 +32,8 @@
     "welcomeEveningOneMore": "One more thing, {username}?",
     "welcomeEveningStill": "Still at it, {username}?",
     "lastViewed": "Last viewed",
+    "openAssistant": "Open AI assistant",
+    "openCalendarFeed": "Open calendar feed",
     "addToHomeScreen": "Add this app to your home screen for faster access and improved experience.",
     "goToOverview": "Go to overview",
     "project": {
@@ -327,6 +329,7 @@
     "unfavorite": "Remove this project from favorites",
     "openSettingsMenu": "Open project settings menu",
     "description": "Project description",
+    "continueInAssistant": "Continue in AI assistant",
     "favoriteDescription": "This project has all tasks marked as favorites.",
     "create": {
       "header": "New project",
@@ -962,6 +965,7 @@
       "bucketChangedSuccess": "The task bucket has been changed successfully.",
       "belongsToProject": "This task belongs to project '{project}'",
       "back": "Back to project",
+      "continueInAssistant": "Continue in AI assistant",
       "due": "Due {at}",
       "closePopup": "Close popup",
       "scrollToBottom": "Scroll to bottom",

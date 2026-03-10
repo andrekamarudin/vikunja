@@ -20,6 +20,15 @@
 				<Icon icon="arrow-left" />
 				{{ $t('task.detail.back') }}
 			</BaseButton>
+			<BaseButton
+				v-if="!isModal"
+				:href="taskAssistantHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link mbs-2"
+			>
+				<Icon icon="comments" />
+				<span>🤖 {{ $t('task.detail.continueInAssistant') }}</span>
+			</BaseButton>
 			<Heading
 				ref="heading"
 				:task="task"
@@ -779,6 +788,19 @@ const projectRoute = computed(() => ({
 	hash: route.hash,
 }))
 
+const taskAssistantHref = computed(() => {
+	const params = new URLSearchParams({
+		continue: '1',
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: project.value ? getProjectTitle(project.value) : '',
+	})
+
+	return `/llm/?${params.toString()}`
+})
+
 const canWrite = computed(() => (
 	task.value.maxPermission !== null &&
 	task.value.maxPermission > PERMISSIONS.READ
@@ -1200,6 +1222,13 @@ function setRelatedTasksActive() {
 
 .task-view * {
 	transition: opacity 50ms ease;
+}
+
+.assistant-context-link {
+	display: inline-flex;
+	align-items: center;
+	gap: .4rem;
+	margin-inline-start: .5rem;
 }
 
 .is-loading .task-view * {
