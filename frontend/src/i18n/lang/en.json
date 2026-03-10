@@ -5,6 +5,8 @@
     "welcomeDay": "Hi {username}!",
     "welcomeEvening": "Good Evening {username}!",
     "lastViewed": "Last viewed",
+    "openAssistant": "Open AI assistant",
+    "openCalendarFeed": "Open calendar feed",
     "addToHomeScreen": "Add this app to your home screen for faster access and improved experience.",
     "goToOverview": "Go to overview",
     "project": {
