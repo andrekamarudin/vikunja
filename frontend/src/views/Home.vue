@@ -23,6 +23,22 @@
 			class="is-max-width-desktop"
 			@taskAdded="updateTaskKey"
 		/>
+		<div class="home-shortcuts is-max-width-desktop">
+			<BaseButton
+				href="/llm"
+				:open-external-in-new-tab="false"
+				class="button"
+			> 
+				<span>🤖 {{ $t('home.openAssistant') }}</span>
+			</BaseButton>
+			<BaseButton
+				href="/ical"
+				:open-external-in-new-tab="false"
+				class="button is-outlined"
+			>  
+				<span>🗓️ {{ $t('home.openCalendarFeed') }}</span>
+			</BaseButton>
+		</div>
 		<ImportHint v-if="tasksLoaded" />
 		<div
 			v-if="projectHistory.length > 0"
@@ -55,6 +71,7 @@ import ShowTasks from '@/views/tasks/ShowTasks.vue'
 import ProjectCardGrid from '@/components/project/partials/ProjectCardGrid.vue'
 import AddTask from '@/components/tasks/AddTask.vue'
 import ImportHint from '@/components/home/ImportHint.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 import {getHistory} from '@/modules/projectHistory'
 import {parseDateOrNull} from '@/helpers/parseDateOrNull'
@@ -114,6 +131,20 @@ function handleClearLabelFilter() {
 </script>
 
 <style scoped lang="scss">
+.home-shortcuts {
+	display: flex;
+	gap: .75rem;
+	justify-content: center;
+	margin-block-start: 1rem;
+	flex-wrap: wrap;
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		gap: .5rem;
+	}
+}
+
 .show-tasks {
 	margin-block-start: 2rem;
 }
