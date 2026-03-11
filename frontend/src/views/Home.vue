@@ -28,16 +28,14 @@
 				href="/llm"
 				:open-external-in-new-tab="false"
 				class="button"
-			>
-				<Icon icon="comments" />
+			> 
 				<span>🤖 {{ $t('home.openAssistant') }}</span>
 			</BaseButton>
 			<BaseButton
 				href="/ical"
 				:open-external-in-new-tab="false"
 				class="button is-outlined"
-			>
-				<Icon icon="calendar" />
+			>  
 				<span>🗓️ {{ $t('home.openCalendarFeed') }}</span>
 			</BaseButton>
 		</div>

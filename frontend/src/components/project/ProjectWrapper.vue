@@ -35,7 +35,7 @@
 				class="assistant-context-link"
 			>
 				<Icon icon="comments" />
-				<span>{{ $t('project.continueInAssistant') }}</span>
+				<span>🤖 {{ $t('project.continueInAssistant') }}</span>
 			</BaseButton>
 			<slot name="header" />
 		</div>
@@ -103,7 +103,7 @@ const projectAssistantHref = computed(() => {
 		project_title: getProjectTitle(currentProject.value),
 	})
 
-	return `/llm?${params.toString()}`
+	return `/llm/?${params.toString()}`
 })
 
 function getViewTitle(view: IProjectView) {

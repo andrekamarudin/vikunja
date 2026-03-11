@@ -27,7 +27,7 @@
 				class="assistant-context-link mbs-2"
 			>
 				<Icon icon="comments" />
-				{{ $t('task.detail.continueInAssistant') }}
+				<span>🤖 {{ $t('task.detail.continueInAssistant') }}</span>
 			</BaseButton>
 			<Heading
 				ref="heading"
@@ -793,7 +793,7 @@ const taskAssistantHref = computed(() => {
 		project_title: project.value ? getProjectTitle(project.value) : '',
 	})
 
-	return `/llm?${params.toString()}`
+	return `/llm/?${params.toString()}`
 })
 
 const canWrite = computed(() => (
