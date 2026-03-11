@@ -30,7 +30,7 @@
 				class="button"
 			>
 				<Icon icon="comments" />
-				<span>{{ $t('home.openAssistant') }}</span>
+				<span>🤖 {{ $t('home.openAssistant') }}</span>
 			</BaseButton>
 			<BaseButton
 				href="/ical"
@@ -38,7 +38,7 @@
 				class="button is-outlined"
 			>
 				<Icon icon="calendar" />
-				<span>{{ $t('home.openCalendarFeed') }}</span>
+				<span>🗓️ {{ $t('home.openCalendarFeed') }}</span>
 			</BaseButton>
 		</div>
 		<ImportHint v-if="tasksLoaded" />
