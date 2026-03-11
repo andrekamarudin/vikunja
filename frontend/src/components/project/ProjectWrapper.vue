@@ -28,6 +28,15 @@
 					{{ getViewTitle(view) }}
 				</BaseButton>
 			</div>
+			<BaseButton
+				v-if="currentProject?.id > 0"
+				:href="projectAssistantHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link"
+			>
+				<Icon icon="comments" />
+				<span>{{ $t('project.continueInAssistant') }}</span>
+			</BaseButton>
 			<slot name="header" />
 		</div>
 		<CustomTransition name="fade">
@@ -85,6 +94,17 @@ const currentProject = computed<IProject>(() => {
 useTitle(() => currentProject.value?.id ? getProjectTitle(currentProject.value) : '')
 
 const views = computed(() => projectStore.projects[props.projectId]?.views)
+
+const projectAssistantHref = computed(() => {
+	const params = new URLSearchParams({
+		continue: '1',
+		context_type: 'project',
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/llm?${params.toString()}`
+})
 
 function getViewTitle(view: IProjectView) {
 	switch (view.title) {
@@ -157,6 +177,12 @@ function getViewRoute(view: IProjectView) {
 		font-weight: bold;
 		box-shadow: var(--shadow-xs);
 	}
+}
+
+.assistant-context-link {
+	display: inline-flex;
+	align-items: center;
+	gap: .4rem;
 }
 
 // FIXME: this should be in notification and set via a prop
