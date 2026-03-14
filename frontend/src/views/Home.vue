@@ -38,6 +38,13 @@
 			>  
 				<span>🗓️ {{ $t('home.openCalendarFeed') }}</span>
 			</BaseButton>
+			<BaseButton
+				href="/gantt"
+				:open-external-in-new-tab="false"
+				class="button is-outlined"
+			>
+				<span>📊 {{ $t('home.openGanttView') }}</span>
+			</BaseButton>
 		</div>
 		<ImportHint v-if="tasksLoaded" />
 		<div

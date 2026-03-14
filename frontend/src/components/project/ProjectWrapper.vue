@@ -67,6 +67,24 @@
 			</div>
 			<BaseButton
 				v-if="currentProject?.id > 0"
+				:href="projectCalendarHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link"
+			>
+				<Icon icon="calendar" />
+				<span>🗓️ {{ $t('project.openCalendarView') }}</span>
+			</BaseButton>
+			<BaseButton
+				v-if="currentProject?.id > 0"
+				:href="projectGanttHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link"
+			>
+				<Icon icon="chart-bar" />
+				<span>📊 {{ $t('project.openGanttView') }}</span>
+			</BaseButton>
+			<BaseButton
+				v-if="currentProject?.id > 0"
 				:href="projectAssistantHref"
 				:open-external-in-new-tab="false"
 				class="assistant-context-link"
@@ -178,6 +196,24 @@ const projectAssistantHref = computed(() => {
 	})
 
 	return `/llm/?${params.toString()}`
+})
+
+const projectCalendarHref = computed(() => {
+	const params = new URLSearchParams({
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/calendar?${params.toString()}`
+})
+
+const projectGanttHref = computed(() => {
+	const params = new URLSearchParams({
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/gantt?${params.toString()}`
 })
 
 function getViewTitle(view: IProjectView) {
