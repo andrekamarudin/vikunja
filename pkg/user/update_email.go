@@ -33,6 +33,10 @@ type EmailUpdate struct {
 
 // UpdateEmail lets a user update their email address
 func UpdateEmail(s *xorm.Session, update *EmailUpdate) (err error) {
+	err = checkIfEmailAliasExists(s, update.NewEmail, update.User.ID)
+	if err != nil {
+		return err
+	}
 
 	// Check the email is not already used
 	user := &User{}
