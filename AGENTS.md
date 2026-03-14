@@ -55,6 +55,18 @@ parent-directory/
 
 After creation, tell the user where they can find the new worktree.
 
+### Finishing a Worktree
+
+When implementation in a worktree is complete, finish the lifecycle in this order:
+
+1. Pull the latest `main` into the worktree.
+2. Resolve conflicts inside the worktree.
+3. Run the necessary verification there.
+4. Push the integrated result to `origin/main`.
+5. Delete the completed worktree.
+
+If repository policy blocks direct pushes to `origin/main`, stop and report the blocker.
+
 ## Development Commands
 
 ### Backend (Go)
