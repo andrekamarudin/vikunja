@@ -69,4 +69,21 @@ func TestUpdateEmailStatusPersistence(t *testing.T) {
 		assert.Equal(t, StatusActive, updated.Status)
 		assert.Equal(t, "new2@example.com", updated.Email)
 	})
+
+	t.Run("gmail alias collision", func(t *testing.T) {
+		db.LoadAndAssertFixtures(t)
+		s := db.NewSession()
+		defer s.Close()
+
+		_, err := CreateUser(s, &User{
+			Username: "gmailbase",
+			Password: "12345",
+			Email:    "andre.kamarudin@gmail.com",
+		})
+		require.NoError(t, err)
+
+		err = UpdateEmail(s, &EmailUpdate{User: &User{ID: 2}, NewEmail: "andrekamarudin+alias@gmail.com"})
+		require.Error(t, err)
+		assert.True(t, IsErrUserEmailExists(err))
+	})
 }
