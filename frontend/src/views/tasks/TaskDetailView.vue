@@ -22,6 +22,24 @@
 			</BaseButton>
 			<BaseButton
 				v-if="!isModal"
+				:href="taskCalendarHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link mbs-2"
+			>
+				<Icon icon="calendar" />
+				<span>🗓️ {{ $t('task.detail.openCalendarView') }}</span>
+			</BaseButton>
+			<BaseButton
+				v-if="!isModal"
+				:href="taskGanttHref"
+				:open-external-in-new-tab="false"
+				class="assistant-context-link mbs-2"
+			>
+				<Icon icon="chart-bar" />
+				<span>📊 {{ $t('task.detail.openGanttView') }}</span>
+			</BaseButton>
+			<BaseButton
+				v-if="!isModal"
 				:href="taskAssistantHref"
 				:open-external-in-new-tab="false"
 				class="assistant-context-link mbs-2"
@@ -794,6 +812,30 @@ const taskAssistantHref = computed(() => {
 	})
 
 	return `/llm/?${params.toString()}`
+})
+
+const taskCalendarHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: project.value ? getProjectTitle(project.value) : '',
+	})
+
+	return `/calendar?${params.toString()}`
+})
+
+const taskGanttHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: project.value ? getProjectTitle(project.value) : '',
+	})
+
+	return `/gantt?${params.toString()}`
 })
 
 const canWrite = computed(() => (

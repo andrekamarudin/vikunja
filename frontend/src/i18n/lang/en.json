@@ -7,6 +7,7 @@
     "lastViewed": "Last viewed",
     "openAssistant": "Open AI assistant",
     "openCalendarFeed": "Open calendar feed",
+    "openGanttView": "Open gantt view",
     "addToHomeScreen": "Add this app to your home screen for faster access and improved experience.",
     "goToOverview": "Go to overview",
     "project": {
@@ -281,6 +282,8 @@
     "openSettingsMenu": "Open project settings menu",
     "description": "Project description",
     "continueInAssistant": "Continue in AI assistant",
+    "openCalendarView": "Open calendar view",
+    "openGanttView": "Open gantt view",
     "favoriteDescription": "This project has all tasks marked as favorites.",
     "create": {
       "header": "New project",
@@ -863,6 +866,8 @@
       "belongsToProject": "This task belongs to project '{project}'",
       "back": "Back to project",
       "continueInAssistant": "Continue in AI assistant",
+      "openCalendarView": "Open calendar view",
+      "openGanttView": "Open gantt view",
       "due": "Due {at}",
       "closePopup": "Close popup",
       "scrollToBottom": "Scroll to bottom",
