@@ -27,23 +27,37 @@
 			<BaseButton
 				href="/llm"
 				:open-external-in-new-tab="false"
-				class="button"
+				class="wrapper-link"
 			> 
 				<span>🤖 {{ $t('home.openAssistant') }}</span>
 			</BaseButton>
 			<BaseButton
+				href="/calendar"
+				:open-external-in-new-tab="false"
+				class="wrapper-link"
+			>
+				<span>🗓️ {{ $t('home.openCalendarView') }}</span>
+			</BaseButton>
+			<BaseButton
 				href="/ical"
 				:open-external-in-new-tab="false"
-				class="button is-outlined"
+				class="wrapper-link"
 			>  
 				<span>🗓️ {{ $t('home.openCalendarFeed') }}</span>
 			</BaseButton>
 			<BaseButton
 				href="/gantt"
 				:open-external-in-new-tab="false"
-				class="button is-outlined"
+				class="wrapper-link"
 			>
 				<span>📊 {{ $t('home.openGanttView') }}</span>
+			</BaseButton>
+			<BaseButton
+				href="/feedback"
+				:open-external-in-new-tab="false"
+				class="wrapper-link"
+			>
+				<span>💬 {{ $t('home.openFeedback') }}</span>
 			</BaseButton>
 		</div>
 		<ImportHint v-if="tasksLoaded" />
@@ -139,16 +153,31 @@ function handleClearLabelFilter() {
 
 <style scoped lang="scss">
 .home-shortcuts {
-	display: flex;
-	gap: .75rem;
+	display: inline-flex;
+	gap: .5rem;
 	justify-content: center;
 	margin-block-start: 1rem;
 	flex-wrap: wrap;
+	padding: .5rem;
+	border-radius: $radius;
+	background: var(--white);
+	box-shadow: var(--shadow-sm);
 
-	.button {
+	.wrapper-link {
 		display: inline-flex;
 		align-items: center;
 		gap: .5rem;
+		border-radius: $radius;
+		padding: .4rem .7rem;
+		font-size: .85rem;
+		color: var(--text);
+		text-decoration: none;
+		transition: all 100ms;
+
+		&:hover {
+			color: var(--switch-view-color);
+			background: var(--primary);
+		}
 	}
 }
 

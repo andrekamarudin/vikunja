@@ -20,32 +20,39 @@
 				<Icon icon="arrow-left" />
 				{{ $t('task.detail.back') }}
 			</BaseButton>
-			<BaseButton
+			<div
 				v-if="!isModal"
-				:href="taskCalendarHref"
-				:open-external-in-new-tab="false"
-				class="assistant-context-link mbs-2"
+				class="task-context-links switch-view mbs-2"
 			>
-				<Icon icon="calendar" />
-				<span>🗓️ {{ $t('task.detail.openCalendarView') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-if="!isModal"
-				:href="taskGanttHref"
-				:open-external-in-new-tab="false"
-				class="assistant-context-link mbs-2"
-			>
-				<Icon icon="chart-bar" />
-				<span>📊 {{ $t('task.detail.openGanttView') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-if="!isModal"
-				class="assistant-context-link mbs-2"
-				@click="showAssistantModal = true"
-			>
-				<Icon icon="comments" />
-				<span>🤖 {{ $t('task.detail.continueInAssistant') }}</span>
-			</BaseButton>
+				<BaseButton
+					:href="taskCalendarHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🗓️ {{ $t('task.detail.openCalendarView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskGanttHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>📊 {{ $t('task.detail.openGanttView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskAssistantHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🤖 {{ $t('task.detail.continueInAssistant') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskFeedbackHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>💬 {{ $t('task.detail.openFeedback') }}</span>
+				</BaseButton>
+			</div>
 			<Heading
 				ref="heading"
 				:task="task"
@@ -631,24 +638,6 @@
 		</BaseButton>
 
 		<Modal
-			:enabled="showAssistantModal"
-			wide
-			variant="scrolling"
-			class="task-assistant-modal"
-			@close="showAssistantModal = false"
-		>
-			<div class="task-assistant-modal-shell">
-				<iframe
-					:key="taskAssistantHref"
-					:src="taskAssistantHref"
-					:title="$t('task.detail.continueInAssistant')"
-					class="task-assistant-frame"
-					loading="lazy"
-				/>
-			</div>
-		</Modal>
-
-		<Modal
 			:enabled="showDeleteModal"
 			@close="showDeleteModal = false"
 			@submit="deleteTask()"
@@ -816,6 +805,7 @@ const taskColor = ref<ITask['hexColor']>('')
 const visible = ref(false)
 
 const project = computed(() => projectStore.projects[task.value.projectId])
+const projectTitle = computed(() => project.value ? String(project.value.title || '') : '')
 
 const projectRoute = computed(() => ({
 	name: 'project.index',
@@ -830,7 +820,7 @@ const taskAssistantHref = computed(() => {
 		task_id: String(task.value.id || props.taskId),
 		task_title: task.value.title || '',
 		project_id: String(task.value.projectId || ''),
-		project_title: project.value ? getProjectTitle(project.value) : '',
+		project_title: projectTitle.value,
 	})
 
 	return `/llm/?${params.toString()}`
@@ -842,7 +832,7 @@ const taskCalendarHref = computed(() => {
 		task_id: String(task.value.id || props.taskId),
 		task_title: task.value.title || '',
 		project_id: String(task.value.projectId || ''),
-		project_title: project.value ? getProjectTitle(project.value) : '',
+		project_title: projectTitle.value,
 	})
 
 	return `/calendar?${params.toString()}`
@@ -854,10 +844,22 @@ const taskGanttHref = computed(() => {
 		task_id: String(task.value.id || props.taskId),
 		task_title: task.value.title || '',
 		project_id: String(task.value.projectId || ''),
-		project_title: project.value ? getProjectTitle(project.value) : '',
+		project_title: projectTitle.value,
 	})
 
 	return `/gantt?${params.toString()}`
+})
+
+const taskFeedbackHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: projectTitle.value,
+	})
+
+	return `/feedback?${params.toString()}`
 })
 
 const canWrite = computed(() => (
@@ -1157,7 +1159,6 @@ useTaskDetailShortcuts({
 	onSave: saveTask,
 })
 
-const showAssistantModal = ref(false)
 const showDeleteModal = ref(false)
 
 async function deleteTask() {
@@ -1284,47 +1285,10 @@ function setRelatedTasksActive() {
 	transition: opacity 50ms ease;
 }
 
-.assistant-context-link {
+.task-context-links {
 	display: inline-flex;
-	align-items: center;
-	gap: .4rem;
-	margin-inline-start: .5rem;
-}
-
-.task-assistant-modal {
-	:deep(.modal-content) {
-		inline-size: min(1200px, calc(100vw - 2rem));
-		block-size: min(85dvh, 900px);
-		max-block-size: none;
-		padding: 0;
-		border-radius: $radius;
-		overflow: hidden;
-		background: var(--white);
-		color: var(--text);
-		box-shadow: var(--shadow-xl);
-	}
-
-	@media screen and (max-width: $tablet) {
-		:deep(.modal-content) {
-			inline-size: 100vw;
-			block-size: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-			border-radius: 0;
-		}
-	}
-}
-
-.task-assistant-modal-shell {
-	inline-size: 100%;
-	block-size: 100%;
-	background: var(--white);
-}
-
-.task-assistant-frame {
-	display: block;
-	inline-size: 100%;
-	block-size: 100%;
-	border: 0;
-	background: var(--white);
+	flex-wrap: wrap;
+	gap: .5rem;
 }
 
 .is-loading .task-view * {

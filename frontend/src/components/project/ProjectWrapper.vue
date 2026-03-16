@@ -65,33 +65,39 @@
 					{{ getViewTitle(view) }}
 				</BaseButton>
 			</div>
-			<BaseButton
+			<div
 				v-if="currentProject?.id > 0"
-				:href="projectCalendarHref"
-				:open-external-in-new-tab="false"
-				class="assistant-context-link"
+				class="switch-view switch-view-external"
 			>
-				<Icon icon="calendar" />
-				<span>🗓️ {{ $t('project.openCalendarView') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-if="currentProject?.id > 0"
-				:href="projectGanttHref"
-				:open-external-in-new-tab="false"
-				class="assistant-context-link"
-			>
-				<Icon icon="chart-bar" />
-				<span>📊 {{ $t('project.openGanttView') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-if="currentProject?.id > 0"
-				:href="projectAssistantHref"
-				:open-external-in-new-tab="false"
-				class="assistant-context-link"
-			>
-				<Icon icon="comments" />
-				<span>🤖 {{ $t('project.continueInAssistant') }}</span>
-			</BaseButton>
+				<BaseButton
+					:href="projectCalendarHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🗓️ {{ $t('project.openCalendarView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectGanttHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>📊 {{ $t('project.openGanttView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectAssistantHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🤖 {{ $t('project.continueInAssistant') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectFeedbackHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>💬 {{ $t('project.openFeedback') }}</span>
+				</BaseButton>
+			</div>
 			<slot name="header" />
 		</div>
 		<CustomTransition name="fade">
@@ -216,6 +222,16 @@ const projectGanttHref = computed(() => {
 	return `/gantt?${params.toString()}`
 })
 
+const projectFeedbackHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'project',
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/feedback?${params.toString()}`
+})
+
 function getViewTitle(view: IProjectView) {
 	switch (view.title) {
 		case 'List':
@@ -315,10 +331,8 @@ function getViewRoute(view: IProjectView) {
 	}
 }
 
-.assistant-context-link {
-	display: inline-flex;
-	align-items: center;
-	gap: .4rem;
+.switch-view-external {
+	flex-wrap: wrap;
 }
 
 // FIXME: this should be in notification and set via a prop
