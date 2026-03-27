@@ -1,0 +1,23 @@
+name: Deploy Vikunja Core
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 46.250.234.28
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/src/vikunja
+            git checkout -- .
+            git pull --ff-only origin main
+            cd /opt/vikunja
+            docker compose up -d --no-deps --build vikunja
+            echo "Vikunja core deploy complete"

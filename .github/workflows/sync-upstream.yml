@@ -1,0 +1,33 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          fetch-depth: 0
+      - name: Merge upstream (excluding workflows)
+        run: |
+          git remote add upstream https://github.com/go-vikunja/vikunja.git || true
+          git fetch upstream main
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Merge but keep our workflow files
+          git merge upstream/main --no-commit --no-ff || true
+          git checkout HEAD -- .github/workflows/ 2>/dev/null || true
+          if git diff --cached --quiet && git diff --quiet; then
+            echo "Already up to date."
+          else
+            git commit -m "chore: sync with upstream go-vikunja/vikunja"
+          fi
+      - name: Push changes
+        run: git push origin main
