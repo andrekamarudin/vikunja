@@ -190,9 +190,11 @@ func checkIfUserExists(s *xorm.Session, user *User) (err error) {
 		return ErrUserEmailExists{user.ID, user.Email}
 	}
 
-	err = checkIfEmailAliasExists(s, user.Email, user.ID)
-	if err != nil {
-		return err
+	if user.Issuer == IssuerLocal {
+		err = checkIfEmailAliasExists(s, user.Email, user.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
