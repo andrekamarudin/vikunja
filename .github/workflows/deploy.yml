@@ -14,10 +14,12 @@ jobs:
           host: 46.250.234.28
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 30m
           script: |
+            set -e
             cd /opt/src/vikunja
-            git checkout -- .
-            git pull --ff-only origin main
+            git fetch origin main
+            git reset --hard origin/main
             cd /opt/vikunja
             docker compose up -d --no-deps --build vikunja
             echo "Vikunja core deploy complete"
