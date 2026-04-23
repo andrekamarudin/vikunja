@@ -68,6 +68,26 @@ func TestCreateUser(t *testing.T) {
 		require.Error(t, err)
 		assert.True(t, IsErrUserEmailExists(err))
 	})
+	t.Run("same gmail alias email", func(t *testing.T) {
+		db.LoadAndAssertFixtures(t)
+		s := db.NewSession()
+		defer s.Close()
+
+		_, err := CreateUser(s, &User{
+			Username: "gmailbase",
+			Password: "12345",
+			Email:    "andre.kamarudin@gmail.com",
+		})
+		require.NoError(t, err)
+
+		_, err = CreateUser(s, &User{
+			Username: "gmailalias",
+			Password: "12345",
+			Email:    "andrekamarudin+test@googlemail.com",
+		})
+		require.Error(t, err)
+		assert.True(t, IsErrUserEmailExists(err))
+	})
 	t.Run("no username", func(t *testing.T) {
 		db.LoadAndAssertFixtures(t)
 		s := db.NewSession()

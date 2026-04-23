@@ -66,6 +66,15 @@ func UserShow(c *echo.Context) error {
 		return err
 	}
 
+	// Re-fetch with email so that the current user can see their own email address.
+	if u.ID > 0 {
+		uWithEmail, err := user.GetUserWithEmail(s, &user.User{ID: u.ID})
+		if err != nil {
+			return err
+		}
+		u = uWithEmail
+	}
+
 	us := &UserWithSettings{
 		User: *u,
 		Settings: &UserSettings{

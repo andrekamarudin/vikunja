@@ -190,5 +190,58 @@ func checkIfUserExists(s *xorm.Session, user *User) (err error) {
 		return ErrUserEmailExists{user.ID, user.Email}
 	}
 
+	if user.Issuer == IssuerLocal {
+		err = checkIfEmailAliasExists(s, user.Email, user.ID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func normalizeEmailAlias(email string) string {
+	cleaned := strings.TrimSpace(strings.ToLower(email))
+	if cleaned == "" {
+		return ""
+	}
+
+	parts := strings.SplitN(cleaned, "@", 2)
+	if len(parts) != 2 {
+		return cleaned
+	}
+
+	local := parts[0]
+	domain := parts[1]
+	if domain == "gmail.com" || domain == "googlemail.com" {
+		local = strings.SplitN(local, "+", 2)[0]
+		local = strings.ReplaceAll(local, ".", "")
+		domain = "gmail.com"
+	}
+
+	return local + "@" + domain
+}
+
+func checkIfEmailAliasExists(s *xorm.Session, email string, excludeID int64) error {
+	normalizedEmail := normalizeEmailAlias(email)
+	if normalizedEmail == "" || !strings.Contains(normalizedEmail, "@") {
+		return nil
+	}
+
+	users := []*User{}
+	err := s.Where("id <> ?", excludeID).And("email <> ''").Find(&users)
+	if err != nil {
+		return err
+	}
+
+	for _, existingUser := range users {
+		if existingUser == nil {
+			continue
+		}
+		if normalizeEmailAlias(existingUser.Email) == normalizedEmail {
+			return ErrUserEmailExists{UserID: existingUser.ID, Email: email}
+		}
+	}
+
 	return nil
 }
