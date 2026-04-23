@@ -77,3 +77,37 @@ func TestProjectBackgroundDeletePermission(t *testing.T) {
 		assert.Equal(t, http.StatusForbidden, getHTTPErrorCode(err))
 	})
 }
+
+func TestGetProjectBackgroundClearsBrokenReference(t *testing.T) {
+	t.Run("Missing background file returns 404 and clears the project reference", func(t *testing.T) {
+		e, err := setupTestEnv()
+		require.NoError(t, err)
+
+		s := db.NewSession()
+
+		_, err = s.Where("id = ?", 35).Cols("background_file_id", "background_blur_hash").Update(&models.Project{
+			BackgroundFileID:   999999,
+			BackgroundBlurHash: "missing",
+		})
+		require.NoError(t, err)
+		require.NoError(t, s.Commit())
+		s.Close()
+
+		c, _ := createRequest(e, http.MethodGet, "", nil, map[string]string{"project": "35"})
+		addUserTokenToContext(t, &testuser6, c)
+		err = bgHandler.GetProjectBackground(c)
+
+		require.Error(t, err)
+		assert.Equal(t, http.StatusNotFound, getHTTPErrorCode(err))
+
+		check := db.NewSession()
+		defer check.Close()
+
+		project := models.Project{ID: 35}
+		has, err := check.Get(&project)
+		require.NoError(t, err)
+		assert.True(t, has)
+		assert.Equal(t, int64(0), project.BackgroundFileID)
+		assert.Empty(t, project.BackgroundBlurHash)
+	})
+}

@@ -31,6 +31,7 @@ import (
 	"image"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -387,11 +388,36 @@ func GetProjectBackground(c *echo.Context) error {
 		ID: project.BackgroundFileID,
 	}
 	if err := bgFile.LoadFileByID(); err != nil {
+		if files.IsErrFileDoesNotExist(err) || os.IsNotExist(err) {
+			log.Warningf("Project %d references missing background file %d, clearing broken reference", project.ID, project.BackgroundFileID)
+			if clearErr := models.ClearProjectBackground(s, project.ID); clearErr != nil {
+				_ = s.Rollback()
+				return clearErr
+			}
+			if commitErr := s.Commit(); commitErr != nil {
+				return commitErr
+			}
+			return echo.NewHTTPError(http.StatusNotFound, "Project background not found")
+		}
 		_ = s.Rollback()
 		return err
 	}
 	stat, err := files.FileStat(bgFile)
 	if err != nil {
+		if files.IsErrFileDoesNotExist(err) || os.IsNotExist(err) {
+			if bgFile.File != nil {
+				_ = bgFile.File.Close()
+			}
+			log.Warningf("Project %d background file %d disappeared during read, clearing broken reference", project.ID, project.BackgroundFileID)
+			if clearErr := models.ClearProjectBackground(s, project.ID); clearErr != nil {
+				_ = s.Rollback()
+				return clearErr
+			}
+			if commitErr := s.Commit(); commitErr != nil {
+				return commitErr
+			}
+			return echo.NewHTTPError(http.StatusNotFound, "Project background not found")
+		}
 		_ = s.Rollback()
 		return err
 	}
