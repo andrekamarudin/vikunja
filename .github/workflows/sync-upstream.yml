@@ -1,50 +1,40 @@
-name: Dependency Checks
+name: Sync upstream
 
 on:
-  pull_request:
-    paths:
-      - frontend/pnpm-lock.yaml
-      - desktop/pnpm-lock.yaml
-
-permissions:
-  contents: read
-  pull-requests: write
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
 
 jobs:
-  diff_dependencies:
+  sync:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: [frontend, desktop]
+    permissions:
+      contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout fork
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           fetch-depth: 0
-      - name: Create Diff
-        uses: e18e/action-dependency-diff@v1
-        with:
-          working-directory: ${{ matrix.directory }}
-
-  check-provenance:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: [frontend, desktop]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Check provenance downgrades
-        uses: danielroe/provenance-action@main
-        with:
-          workspace-path: ${{ matrix.directory }}
-          fail-on-provenance-change: true
+      - name: Merge upstream (excluding workflows)
+        run: |
+          git remote add upstream https://github.com/go-vikunja/vikunja.git || true
+          git fetch upstream main
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Merge but keep our workflow files
+          git merge upstream/main --no-commit --no-ff || true
+          git checkout HEAD -- .github/workflows/ 2>/dev/null || true
+          if git diff --cached --quiet && git diff --quiet; then
+            echo "Already up to date."
+          else
+            git commit -m "chore: sync with upstream go-vikunja/vikunja"
+          fi
+      - name: Push changes
+        run: git push origin main
 
   notify:
     if: ${{ always() }}
-    needs: [diff_dependencies, check-provenance]
+    needs: [sync]
     runs-on: ubuntu-latest
     steps:
       - name: Send ntfy notification
