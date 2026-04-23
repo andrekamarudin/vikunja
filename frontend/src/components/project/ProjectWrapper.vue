@@ -65,6 +65,39 @@
 					{{ getViewTitle(view) }}
 				</BaseButton>
 			</div>
+			<div
+				v-if="currentProject?.id > 0"
+				class="switch-view switch-view-external"
+			>
+				<BaseButton
+					:href="projectCalendarHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🗓️ {{ $t('project.openCalendarView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectGanttHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>📊 {{ $t('project.openGanttView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectAssistantHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🤖 {{ $t('project.continueInAssistant') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="projectFeedbackHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>💬 {{ $t('project.openFeedback') }}</span>
+				</BaseButton>
+			</div>
 			<slot name="header" />
 		</div>
 		<CustomTransition name="fade">
@@ -158,6 +191,45 @@ const activeViewTitle = computed(() => {
 // Re-check overflow when views change
 watch(views, () => {
 	nextTick(() => checkOverflow())
+})
+
+const projectAssistantHref = computed(() => {
+	const params = new URLSearchParams({
+		continue: '1',
+		context_type: 'project',
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/llm/?${params.toString()}`
+})
+
+const projectCalendarHref = computed(() => {
+	const params = new URLSearchParams({
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/calendar?${params.toString()}`
+})
+
+const projectGanttHref = computed(() => {
+	const params = new URLSearchParams({
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/gantt?${params.toString()}`
+})
+
+const projectFeedbackHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'project',
+		project_id: String(currentProject.value?.id || props.projectId),
+		project_title: getProjectTitle(currentProject.value),
+	})
+
+	return `/feedback?${params.toString()}`
 })
 
 function getViewTitle(view: IProjectView) {
@@ -257,6 +329,10 @@ function getViewRoute(view: IProjectView) {
 		font-weight: bold;
 		box-shadow: var(--shadow-xs);
 	}
+}
+
+.switch-view-external {
+	flex-wrap: wrap;
 }
 
 // FIXME: this should be in notification and set via a prop

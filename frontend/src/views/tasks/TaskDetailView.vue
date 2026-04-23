@@ -20,6 +20,39 @@
 				<Icon icon="arrow-left" />
 				{{ $t('task.detail.back') }}
 			</BaseButton>
+			<div
+				v-if="!isModal"
+				class="task-context-links switch-view mbs-2"
+			>
+				<BaseButton
+					:href="taskCalendarHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🗓️ {{ $t('task.detail.openCalendarView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskGanttHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>📊 {{ $t('task.detail.openGanttView') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskAssistantHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>🤖 {{ $t('task.detail.continueInAssistant') }}</span>
+				</BaseButton>
+				<BaseButton
+					:href="taskFeedbackHref"
+					:open-external-in-new-tab="false"
+					class="switch-view-button"
+				>
+					<span>💬 {{ $t('task.detail.openFeedback') }}</span>
+				</BaseButton>
+			</div>
 			<Heading
 				ref="heading"
 				:task="task"
@@ -790,12 +823,62 @@ const taskColor = ref<ITask['hexColor']>('')
 const visible = ref(false)
 
 const project = computed(() => projectStore.projects[task.value.projectId])
+const projectTitle = computed(() => project.value ? String(project.value.title || '') : '')
 
 const projectRoute = computed(() => ({
 	name: 'project.index',
 	params: {projectId: task.value.projectId},
 	hash: route.hash,
 }))
+
+const taskAssistantHref = computed(() => {
+	const params = new URLSearchParams({
+		continue: '1',
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: projectTitle.value,
+	})
+
+	return `/llm/?${params.toString()}`
+})
+
+const taskCalendarHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: projectTitle.value,
+	})
+
+	return `/calendar?${params.toString()}`
+})
+
+const taskGanttHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: projectTitle.value,
+	})
+
+	return `/gantt?${params.toString()}`
+})
+
+const taskFeedbackHref = computed(() => {
+	const params = new URLSearchParams({
+		context_type: 'task',
+		task_id: String(task.value.id || props.taskId),
+		task_title: task.value.title || '',
+		project_id: String(task.value.projectId || ''),
+		project_title: projectTitle.value,
+	})
+
+	return `/feedback?${params.toString()}`
+})
 
 const canWrite = computed(() => (
 	task.value.maxPermission !== null &&
@@ -1221,6 +1304,12 @@ function setRelatedTasksActive() {
 
 .task-view * {
 	transition: opacity 50ms ease;
+}
+
+.task-context-links {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5rem;
 }
 
 .is-loading .task-view * {
